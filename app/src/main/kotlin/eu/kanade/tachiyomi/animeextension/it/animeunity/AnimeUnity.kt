@@ -39,7 +39,7 @@ class AnimeUnity : AnimeHttpSource() {
     }
 
     override fun popularAnimeParse(response: Response): AnimesPage {
-        val body = response.body.string()
+        val body = response.body!!.string()
 
         // Estrai JSON dall'attributo animes="..."
         val animesRegex = """animes="([^"]+)"""".toRegex()
@@ -174,7 +174,7 @@ class AnimeUnity : AnimeHttpSource() {
 
     private suspend fun getRandomAnime(): AnimesPage {
         val response = client.newCall(GET("$baseUrl/randomanime", headers)).execute()
-        val body = response.body.string()
+        val body = response.body!!.string()
 
         val animeRegex = """video-player anime="(\{[^"]+\})"""".toRegex()
         val match = animeRegex.find(body) ?: return AnimesPage(emptyList(), false)
@@ -199,7 +199,7 @@ class AnimeUnity : AnimeHttpSource() {
     }
 
     private fun searchAnimeParse(response: Response, page: Int): AnimesPage {
-        val body = response.body.string()
+        val body = response.body!!.string()
         val data = json.parseToJsonElement(body).jsonObject
 
         val records = data["records"]?.jsonArray ?: return AnimesPage(emptyList(), false)
@@ -236,7 +236,7 @@ class AnimeUnity : AnimeHttpSource() {
     }
 
     override fun animeDetailsParse(response: Response): SAnime {
-        val body = response.body.string()
+        val body = response.body!!.string()
 
         val animeRegex = """video-player anime="(\{[^"]+\})"""".toRegex()
         val match = animeRegex.find(body) ?: return SAnime.create()
@@ -274,7 +274,7 @@ class AnimeUnity : AnimeHttpSource() {
     }
 
     override fun episodeListParse(response: Response): List<SEpisode> {
-        val body = response.body.string()
+        val body = response.body!!.string()
         val url = response.request.url.toString()
 
         val episodesRegex = """episodes="(\[[^\]]+\])"""".toRegex()
@@ -306,7 +306,7 @@ class AnimeUnity : AnimeHttpSource() {
     }
 
     override fun videoListParse(response: Response): List<Video> {
-        val body = response.body.string()
+        val body = response.body!!.string()
         val url = response.request.url.toString()
         val videos = mutableListOf<Video>()
 
@@ -340,7 +340,7 @@ class AnimeUnity : AnimeHttpSource() {
             GET("$baseUrl/embed-url/$episodeId", embedHeaders)
         ).execute()
 
-        val embedUrl = embedUrlResponse.body.string()
+        val embedUrl = embedUrlResponse.body?.string() ?: return emptyList()
         if (embedUrl.isEmpty() || !embedUrl.startsWith("http")) return emptyList()
 
         // Fetch pagina embed per estrarre download URL
@@ -348,7 +348,7 @@ class AnimeUnity : AnimeHttpSource() {
             .add("Referer", "$baseUrl/")
             .build()
 
-        val embedPage = client.newCall(GET(embedUrl, embedPageHeaders)).execute().body.string()
+        val embedPage = client.newCall(GET(embedUrl, embedPageHeaders)).execute().body?.string() ?: return emptyList()
 
         // Estrai download URL
         val downloadRegex = """downloadUrl\s*=\s*'([^']+)'""".toRegex()
