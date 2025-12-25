@@ -45,6 +45,6 @@ dependencies {
     // Jsoup for HTML parsing
     implementation("org.jsoup:jsoup:1.17.1")
 
-    // Injekt for dependency injection
-    compileOnly("com.github.inorichi.injekt:injekt-core:65b0440")
+    // Injekt for dependency injection (from Kohesive)
+    compileOnly("uy.kohesive.injekt:injekt-core:1.16.1")
 }
